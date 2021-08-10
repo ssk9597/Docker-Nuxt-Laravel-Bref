@@ -12,6 +12,17 @@ provider:
   runtime: provided.al2
   # Lambdaバージョンのハッシュの解決(warningが出るので対応)
   lambdaHashingVersion: 20201221
+  iam.role.statements:
+    # DynamoDBの権限をLambdaに付与する
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: 'arn:aws:dynamodb:*:*:table/*'
 
 package:
   # 指定したディレクトリを展開から除外する
@@ -42,6 +53,27 @@ functions:
     layers:
       - ${bref:layer.php-74}
       - ${bref:layer.console}
+
+resources:
+  Resources:
+    # DynamoDB（ここはTableNameと一緒の方が綺麗）
+    usersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        # テーブル名
+        TableName: usersTable
+        # キーの型を指定
+        AttributeDefinitions:
+          - AttributeName: email
+            AttributeType: S
+        # キーの種類を指定（ハッシュもしくはレンジ）
+        KeySchema:
+          - AttributeName: email
+            KeyType: HASH
+        # プロビジョニングするキャパシティーユニットの設定
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
 
 plugins:
   # プラグインの読み込み
