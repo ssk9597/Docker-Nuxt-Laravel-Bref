@@ -15,3 +15,5 @@ AWS Lambda, API Gateway, S3, bref
 Netlify
 
 ## Usage
+
+https://qiita.com/Ryo9597/items/d84f342be0e6c28a43b2
